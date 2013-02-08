@@ -1,0 +1,28 @@
+{
+    "products": [
+    {
+        "name": "G3 Super White Grout",
+        "description": "<p>POLYBLEND G-3 is a pure white, mould resistant, cement based, compressible grout that has been designed to give tile joints a smooth satin like appearance.</p><p>POLYBLEND G-3 is recommended for wall joints up to 3mm wide and is suitable in both internal and external applications. </p><p>PRODUCT HIGHLIGHTS</p><ul><li>Pure White</li><li>Anti- fungal</li><li>Smooth appearance</li><li>Flexible</li><li>Economical</li><li>Easy to clean</li><li>Low VOC</li><li>Hydrophobic (water repellent)</li></ul>",
+        "colors": "0-color array here",
+        "link_logo": "product_data/logo_PolyblendG3.png",
+        "link_datasheet": "0-datasheet here",
+        "link_safety": "0-safety info here"
+    },
+    {
+        "name": "G10-Coloured Grout",
+        "description": "<p>POLYBLEND G-10 is a high quality, flexible, cement based, coloured grout designed for grouting most types of tiles including ceramic, porcelain, natural stone and glass mosaics. In 2.5kg & 10kg bags</p><p>POLYBLEND G-10 can be used in both internal and external applications for joints between 1.5mm and 10mm wide. It’s unique hydrophobic formula makes the grout water repellent, which reduces the effects of efflorescence while also ensuring grout colour consistency. The grout also contains an anti-fungal agent that prevents the growth of mould. </p><p>PRODUCT HIGHLIGHTS</p><ul><li>Smooth appearance</li><li>Flexible</li><li>Hydrophobic (water repellent)</li><li>Reduced efflorescence</li><li>Colour consistent</li><li>Easy to apply</li><li>Easy to clean</li><li>Anti Fungal</li><li>Extended coverage</li><li>Low VOC</li></ul>",
+        "colors": "1-color array here",
+        "link_logo": "1-logo link",
+        "link_datasheet": "1-datasheet here",
+        "link_safety": "1-safety info here"
+    },
+    {
+        "name": "G15-Sanded Grout",
+        "description": "<p>2-Description is here</p>",
+        "colors": "2-color array here",
+        "link_logo": "2-logo link",
+        "link_datasheet": "2-datasheet here",
+        "link_safety": "2-safety info here"
+    }
+    ]
+}

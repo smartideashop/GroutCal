@@ -1,0 +1,81 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <style>
+            body {
+                margin: 0px;
+                padding: 0px;
+            }
+            #myCanvas {
+                border: 1px solid #9C9898;
+            }
+            .colorbox{
+                width:50px;
+                height:50px;
+                border:1px solid #000;
+                margin:10px;
+                float:left;
+            }
+        </style>
+        <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+    </head>
+    <body>
+        <canvas id="myCanvas" width="340" height="340"></canvas>
+        <script>
+            var canvas = $('#myCanvas')[0];
+            var context = canvas.getContext('2d');
+            var imageObj = new Image();
+            imageObj.onload = function() {
+                context.drawImage(imageObj, 10, 10);
+            };
+            
+            var grout_colors = new Array();
+            grout_colors[1] = "#585357";
+            grout_colors[2] = "#fee7d4";
+            grout_colors[3] = "#7f6859";
+
+            //defaults
+            var tile_image = 'images/canvas_test1.png'; 
+            var grout_color = grout_colors[1];
+            
+            function redraw_canvas(){
+                context.fillStyle = grout_color;
+                context.fillRect(0,0,340,340);
+                imageObj.src = tile_image;
+                context.drawImage(imageObj, 10, 10);
+            }
+
+            $(document).ready(function() {
+                redraw_canvas();
+                
+                $('#1.colorbox').css("background-color",grout_colors[1]);
+                $('#2.colorbox').css("background-color",grout_colors[2]);
+                $('#3.colorbox').css("background-color",grout_colors[3]);
+                
+                //change grout
+                $('.colorbox').click(function(){
+                    //alert(this.id);
+                    grout_color = grout_colors[this.id];
+                    redraw_canvas();
+                })
+                
+                //change tile
+                $('.tile').click(function(){
+                    //alert(this.id);
+                    tile_image = 'images/canvas_test'+this.id+'.png';
+                    redraw_canvas();
+                })
+            });
+            
+
+        </script>
+        <h3>Select a tile</h3>
+        <img src='images/tile1.jpg' id="1" class="tile">
+        <img src='images/tile2.jpg' id="2" class="tile">
+
+        <h3 style="clear:both;">Select a Grout colour</h3>
+        <div id='1' class='colorbox'>1</div>
+        <div id='2' class='colorbox'>2</div>
+        <div id='3' class='colorbox'>3</div>
+    </body>
+</html>

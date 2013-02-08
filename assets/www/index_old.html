@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Grout calculator</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script type="text/javascript" src="js/jquery-1.8.3.min.js"></script>
+        <script type="text/javascript" src="js/inc_functions.js"></script>
+
+        <script type="text/javascript">
+            var PID = 1; //default product id
+            var PDATA; //JSON array to store product info
+
+            $(document).ready(function() {
+                //alert('jq ok');
+
+                //change background color of homepage
+                $(document).delegate("#home", "pagecreate", function () {
+                    $(this).css('background', '#f0f0f0');//'this' refers to '#home'.
+                });
+
+                $('#gotopage_calc').click(function(){
+                    alert('going to cal');
+                    $.mobile.changePage("calculator.html");
+                })
+
+                //Load product data from json array
+                $.getJSON("p_data.json", function(data){
+                    products = data.products;
+                    //alert('hi '+JSON.stringify(PDATA[0]));
+                    //alert(PDATA[1].description);
+                });
+
+                //Handle product list from #products page
+                $('#products ul li a').live('click', function() {
+                    PID = $(this).find("#pid").val();
+                    //alert(PID);
+                    //$('#p_info').append(PID);
+                    product = products[PID];
+                    alert(JSON.stringify(products));
+                    //$('#p_info').html(product[0].description);
+                    $.mobile.changePage("#details"); //show page
+                });
+
+                //Handle tabs in the #detail page
+                $("#details ul li").click(function(){
+                    var TAB = $(this).index();
+                    //alert(TAB);
+                    //alert(PDATA[0].description);
+                    //alert(TAB + '  ' + product.colors);
+                    switch(TAB){
+                        case 1: info = product.colors; break;
+                        case 2: info = product.datasheet; break;
+                        case 3: info = product.safety; break;
+                        default: info = product.description;
+                    }
+                    alert(info);
+                    $('#p_info').html(info);
+                });
+            });
+
+
+
+        </script>
+    </head>
+    <body>
+
+        <!-- ------------------------------------------------------------------------------------------------------ -->
+        <div data-role="page" data-theme="c" id="home">
+            <div data-role="header" data-theme="c">
+                <h1>GroutCal</h1>
+                <a href="index.html" data-role="button" data-mini="true" data-icon="home" data-iconpos="notext">Home</a>
+            </div><!-- /header -->
+
+            <div data-role="content">
+                <div id='banner'><img src="images/banner.jpg" border="0"></div>
+
+                <p align="center"><small>Intro text here</small></p>
+
+                <ul data-role="listview" data-inset="true">
+                    <li><a href="#products" data-transition="flip">Product Range</a></li>
+                    <li><a href="#suppliers" data-transition="flip">Supplier list</a></li>
+                    <li><a href="calculator.html" data-transition="flip" id="gotopage_calc___">Grout Calculator</a></li>
+                </ul>
+            </div><!-- /content -->
+
+            <div data-role="footer" data-tap-toggle="false" data-theme="c" align="center">
+                <small>www.smartideashop.com</small>
+            </div><!-- /footer -->
+        </div><!-- /page -->
+
+        <!-- ------------------------------------------------------------------------------------------------------ -->
+        <div data-role="page" data-theme="c" id="products">
+            <div data-role="header" data-theme="c">
+                <h1>GroutCal</h1>
+                <a href="index.html" data-role="button" data-mini="true" data-icon="home" data-iconpos="notext">Home</a>
+            </div><!-- /header -->
+
+            <div data-role="content">
+                <p><small>Intro text here</small></p>
+
+                <ul data-role="listview" data-filter="true">
+                    <li data-role="list-divider">Grout Products</li>
+                    <li><a href=""><h3>G3-White Smooth Grout</h3><p>Satin like appearance</p><input id="pid" name="pid" type="hidden" value="0"></a></li>
+                    <li><a href=""><h3>G10-Coloured Grout</h3><p>All purpose</p><input id="pid" name="pid" type="hidden" value="1"></a></li>
+                    <li><a href=""><h3>G15-Sanded Grout</h3><p>For ceramic, terracotta, slate, quarry and stone tiles</p><input id="pid" name="pid" type="hidden" value="2"></a></li>
+                    <li><a href=""><h3>Epoxy Grout</h3><p>For excellent chemical resistance and commercial use</p><input id="pid" name="pid" type="hidden" value="3"></a></li>
+                    <li><a href=""><h3>S1-Flexible Coloured Silicone</h3><p>Acetoxy cure, sanitary grade silicone sealant</p><input id="pid" name="pid" type="hidden" value="4"></a></li>
+                    <li data-role="list-divider">Grout Maintenance</li>
+                    <li><a href=""><h3>Grout Sealer</h3><p>Resists water, oil and acid based contaminants</p><input id="pid" name="pid" type="hidden" value="5"></a></li>
+                    <li><a href=""><h3>Grout Sealer (same day)</h3><p>Water based aerosol with 360 nozzle</p><input id="pid" name="pid" type="hidden" value="6"></a></li>
+                    <li><a href=""><h3>Grout Deep Clean</h3><p>Removes grease, food stains, soap scum, hard water deposits, dirt & soil</p><input id="pid" name="pid" type="hidden" value="7"></a></li>
+                    <li><a href=""><h3>Grout Colourant</h3><p>Recolours, seals & rejuvenates grout joints</p><input id="pid" name="pid" type="hidden" value="8"></a></li>
+                </ul>
+            </div><!-- /content -->
+
+            <div data-role="footer" data-tap-toggle="false" data-theme="c" align="center">
+                <small>www.smartideashop.com</small>
+            </div><!-- /footer -->
+        </div><!-- /page -->
+
+        <!-- ------------------------------------------------------------------------------------------------------ -->
+        <div data-role="page" data-theme="c" id="suppliers">
+            <div data-role="header" data-theme="c">
+                <h1>GroutCal</h1>
+                <a href="index.html" data-role="button" data-mini="true" data-icon="home" data-iconpos="notext">Home</a>
+            </div><!-- /header -->
+
+            <div data-role="content">
+                <p align="center"><small>Intro text here</small></p>
+
+            </div><!-- /content -->
+
+            <div data-role="footer" data-tap-toggle="false" data-theme="c" align="center">
+                <small>www.smartideashop.com</small>
+            </div><!-- /footer -->
+        </div><!-- /page -->
+
+        <!-- ------------------------------------------------------------------------------------------------------ -->
+        <div data-role="page" data-theme="c" id="details">
+            <div data-role="header" data-theme="c">
+                <h1>GroutCal</h1>
+                <a href="index.html" data-role="button" data-mini="true" data-icon="home" data-iconpos="notext">Home</a>
+            </div><!-- /header -->
+
+            <div data-role="content">
+                <p align="center">Load data from a JSON array and show here for each product pid</p>
+
+                <div data-role="navbar">
+                    <ul>
+                        <li><a href="#" class="ui-btn-active ui-state-persist" data-icon="info">Information</a></li>
+                        <li><a href="#" data-icon="grid">Colour Chart</a></li>
+                        <li><a href="#" data-icon="bars">Data Sheet</a></li>
+                        <li><a href="#" data-icon="alert">Material Safety</a></li>
+                    </ul>
+                </div><!-- /navbar -->
+
+                <div id="p_info"></div>
+            </div><!-- /content -->
+
+            <div data-role="footer" data-tap-toggle="false" data-theme="c" align="center">
+                <small>www.smartideashop.com</small>
+            </div><!-- /footer -->
+        </div><!-- /page -->
+
+
+
+
+        <link type="text/css" rel="stylesheet" href="jqm/jquery.mobile-1.2.0.min.css">
+        <link type="text/css" rel="stylesheet" href="custom.css">
+        <script type="text/javascript" src="jqm/jquery.mobile-1.2.0.min.js"></script>
+    </body>
+</html>
+

@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="generator" content="HTML Tidy, see www.w3.org">
+        <title>ABC Bank: Loan calculator</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script type="text/javascript" src="js/jquery-1.8.3.min.js"></script>
+        <script type="text/javascript" src="js/inc_functions.js"></script>
+
+        <script type="text/javascript">
+            customer = new Object();
+            customer.income_type = 0;
+            customer.dependents = 0;
+            customer.salary1_type = 0;
+            customer.salary1 = 0;
+            customer.salary2_type = 0;
+            customer.salary2 = 0;
+            customer.salary3_type = 0;
+            customer.salary3 = 0;
+            customer.total_credit_card = 0;
+            customer.car_loan_type = 0;
+            customer.car_loan = 0;
+            customer.house_loan_type = 0;
+            customer.house_loan = 0;
+            customer.other_loan_type = 0;
+            customer.other_loan = 0;
+            customer.rate = 0;
+            customer.months = 0;
+            customer.principle = 0;
+            customer.monthly_payment = 0;
+            var MISSING = "missing"; //points to the style
+            var SERVER_MSG = null;
+
+            $(document).ready(function() {
+                //alert('hi');
+                //$('.footerDiv').load('inc_footer.html').trigger("create");
+                //$('#incFooter').load('inc_footer.html');
+                //$('#sendinfo').click(f_sendinfo);
+                $(document).delegate("#home", "pagecreate", function () {
+                    $(this).css('background', '#5EE3F2');//'this' refers to '#home'
+                });
+            });
+            function f_verify_loan1(){
+                var old_link = "#loan2";
+                if($('#salary1').val()<=0){
+                    alert('Income 1 cannot be empty!');
+                    $("#btn_next_loan1").attr("href", "#");
+                    $('#lbl_salary1').addClass(MISSING);
+                    return false;
+                } else {
+                    $("#btn_next_loan1").attr("href", old_link);
+                    $('#lbl_salary1').removeClass(MISSING);
+                }
+            }
+
+            function f_sendinfo(){
+
+                var old_link = "#loan6";
+                var err = false;
+
+                //remove error class
+                $('#client_name').prev().removeClass(MISSING);
+                $('#phone').prev().removeClass(MISSING);
+                $('#email').prev().removeClass(MISSING);
+
+                if(!$('#client_name').val()){
+                    err = true;
+                    $('#client_name').prev().addClass(MISSING); //to the label
+                }
+                if(!$('#phone').val()){
+                    err = true;
+                    $('#phone').prev().addClass(MISSING); //to the label
+                }
+                if(!$('#email').val()){
+                    err = true;
+                    $('#email').prev().addClass(MISSING); //to the label
+                }
+                if(err){
+                    alert('Please complete the feilds before sending.');
+                    $("#sendinfo").attr("href", "#");
+                    return false;
+                } else {
+                    customer.client_name = $('#client_name').val();
+                    customer.phone = $('#phone').val();
+                    customer.email = $('#email').val();
+                    customer.is_client = false;
+                    if ($('#is_client').prop('checked', true))
+                    {
+                        customer.is_client = true;
+                    }
+
+                    //alert(JSON.stringify(customer));
+                    message_json = encodeURIComponent(JSON.stringify(customer)); //convert object to JSON
+
+
+                    //customer = '{"income_type":"Individual","dependents":"0","salary1_type":"monthly","salary1":"150000","salary2_type":0,"salary2":0,"salary3_type":0,"salary3":0,"total_credit_card":0,"car_loan_type":0,"car_loan":0,"house_loan_type":0,"house_loan":0,"other_loan_type":0,"other_loan":0,"rate":0.06,"months":12,"principle":1080000,"monthly_payment":92951,"client_name":"az pc","phone":"777","email":"hhhh","is_client":true}';
+                    //message_json = encodeURIComponent(customer); //convert object to JSON
+
+                    //alert(message_json);
+                    //$('#server_responce').html("ready to post to server = "+message_json);
+                    $.getJSON("http://test.smartideashop.com/sendmail.php?message="+message_json+"&callback=?",
+                    function(data) {
+                        //alert(JSON.stringify(data));
+                        $('#server_responce').html(data.message);
+                        $.mobile.changePage("#loan6");
+                    });
+                }
+            }
+            function f_calc_loan(){
+
+                customer.income_type = $('#income_type').val();
+                customer.dependents = $('#dependents').val();
+                if($('#total_credit_card').val()) {customer.total_credit_card = $('#total_credit_card').val();} //dont read if empty
+
+                customer.rate = $('#rate').val();
+                customer.months = $('#loan_term').val() * 12; //convert years to months
+
+                customer.salary1_type = $('#salary1_type').val();
+                switch(customer.salary1_type){
+                    case "monthly" :
+                        customer.salary1 = $('#salary1').val();
+                        break;
+                    case "weekly" :
+                        customer.salary1 = $('#salary1').val() * 4;
+                        break;
+                    case "daily" :
+                        customer.salary1 = $('#salary1').val() * 25;
+                        break;
+                }
+                if($('#salary2').val()){
+                    customer.salary2_type = $('#salary2_type').val();
+                    switch(customer.salary2_type){
+                        case "monthly" :
+                            customer.salary2 = $('#salary2').val();
+                            break;
+                        case "weekly" :
+                            customer.salary2 = $('#salary2').val() * 4;
+                            break;
+                        case "daily" :
+                            customer.salary2 = $('#salary2').val() * 25;
+                            break;
+                    }
+                }
+                if($('#salary3').val()){
+                    customer.salary3_type = $('#salary3_type').val();
+                    switch(customer.salary3_type){
+                        case "monthly" :
+                            customer.salary3 = $('#salary3').val();
+                            break;
+                        case "weekly" :
+                            customer.salary3 = $('#salary3').val() * 4;
+                            break;
+                        case "daily" :
+                            customer.salary3 = $('#salary3').val() * 25;
+                            break;
+                    }
+                }
+                if($('#car_loan').val()) {
+                    customer.car_loan_type = $('#car_loan_type').val();
+                    switch(customer.car_loan_type){
+                        case "monthly" :
+                            customer.car_loan = $('#car_loan').val();
+                            break;
+                        case "weekly" :
+                            customer.car_loan = $('#car_loan').val() * 4;
+                            break;
+                        case "daily" :
+                            customer.car_loan = $('#car_loan').val() * 25;
+                            break;
+                    }
+                }
+                if($('#house_loan').val()){
+                    customer.house_loan_type = $('#house_loan_type').val();
+                    switch(customer.house_loan_type){
+                        case "monthly" :
+                            customer.house_loan = $('#house_loan').val();
+                            break;
+                        case "weekly" :
+                            customer.house_loan = $('#house_loan').val() * 4;
+                            break;
+                        case "daily" :
+                            customer.house_loan = $('#house_loan').val() * 25;
+                            break;
+                    }
+                }
+                if($('#other_loan').val()){
+                    customer.other_loan_type = $('#other_loan_type').val();
+                    switch(customer.other_loan_type){
+                        case "monthly" :
+                            customer.other_loan = $('#other_loan').val();
+                            break;
+                        case "weekly" :
+                            customer.other_loan = $('#other_loan').val() * 4;
+                            break;
+                        case "daily" :
+                            customer.other_loan = $('#other_loan').val() * 25;
+                            break;
+                    }
+                }
+
+                var total_income = parseInt(customer.salary1) + parseInt(customer.salary2) + parseInt(customer.salary3);
+                var total_expenses = (parseInt(customer.total_credit_card) / 12) + parseInt(customer.car_loan) + parseInt(customer.house_loan) + parseInt(customer.other_loan);
+                var net_income = total_income - total_expenses;
+                var net_income_for_period = net_income * customer.months;
+                var multiplier; //to be used with principal to find borrowable amount
+
+                switch (true) {
+                    case (customer.months >= 1 && customer.months <= 10):
+                        multiplier = .4; //40%
+                        break;
+                    case (customer.months >= 11 && customer.months <= 20):
+                        multiplier = .3; //30%
+                        break;
+                    default:
+                        multiplier = .2; //20%
+                        break;
+                }
+                if (customer.income_type = "Joint") { multiplier = multiplier + .1; } //10% for joint ac holders
+
+                customer.principle = net_income_for_period * multiplier; //amount_borrowable
+                //alert("multiplier="+multiplier);
+                //alert("customer.principle="+customer.principle);
+
+                //reduce 5% per dependent from principle
+                customer.principle = customer.principle - (customer.principle * ((customer.dependents * 5)/100));
+                customer.rate = customer.rate / 100;
+                customer.monthly_payment = (customer.principle * (customer.rate / 12)) / (1 - (Math.pow((1 + customer.rate / 12), -customer.months)));
+                customer.monthly_payment = parseInt(customer.monthly_payment);
+                customer.new_monthly_income = net_income - customer.monthly_payment;
+
+                //alert('total_income='+total_income+' total_expenses='+total_expenses+" net_income"+net_income);
+                //alert('principle='+customer.principle+' monthly_payment='+customer.monthly_payment+' rate='+customer.rate+' months='+customer.months);
+                $('#principle').val(parseInt(customer.principle).formatMoney(2,',','.','$'));
+                $('#monthly_payment').val(customer.monthly_payment.formatMoney(2,',','.','$'));
+                $('#new_monthly_income').val(customer.new_monthly_income.formatMoney(2,',','.','$'));
+
+            }
+
+        </script>
+    </head>
+    <body>
+        <div data-role="page" data-theme="b" id="home">
+            <div data-role="header" data-theme="b" id="hdrMain" name="hdrMain">
+                <h1>LoanApp</h1>
+                <a href="index.html" data-role="button" data-mini="true" data-icon=
+                   "home" data-iconpos="notext">Home</a></div>
+
+            <!-- /header -->
+            <div data-role="content" id="content">
+                <div id='banner'><img src="images/v1_header_sis.jpg" border="0"></div>
+
+                <p align="center"><small></small></p>
+
+                <ul data-role="listview" data-inset="true">
+                    <li><a href="#investments" data-transition="flip">About the Loan App</a></li>
+
+                    <li><a href="#promotions" data-transition="flip">About Smart Idea Shop</a></li>
+
+                    <li><a href="#loan1" data-transition="flip">Loan
+                            calculator</a></li>
+                </ul>
+            </div>
+
+            <div data-role="footer" data-tap-toggle="false" data-theme="b"
+                 align="center"><small>www.smartideashop.com</small><br>
+            </div>
+
+            <!-- /footer -->
+        </div>
+
+        <!-- /page -->
+        <div data-role="page" data-theme="b" id="investments">
+            <div data-role="header" data-theme="b" id="hdrMain" name="hdrMain">
+                <h1>LoanApp</h1>
+
+                <a href="index.html" data-role="button" data-mini="true" data-icon=
+                   "home" data-iconpos="notext">Home</a></div>
+
+            <!-- /header -->
+            <div data-role="content" id="content">
+                <h3>Do you want to buy or build a home? </h3>
+                <p>Use The Loan App to find out how much you can borrow and what your repayments will be.</p>
+
+                <h3>Features</h3>
+
+                <p>You can enter a variable interest rate that you might have seen advertised to work out your borrowing power based on your income and living expenses.
+
+                    Adjust the loan term and interest rate to see how much your minimum monthly repayments will be.
+
+                    No Internet connection required to calculate your borrowing power and loan repayments.</p>
+            </div>
+
+            <div data-role="footer" data-tap-toggle="false" data-theme="b"
+                 align="center"><small>www.smartideashop.com</small><br>
+            </div>
+
+            <!-- /footer -->
+        </div>
+
+        <!-- /page -->
+        <div data-role="page" data-theme="b" id="promotions">
+            <div data-role="header" data-theme="b" id="hdrMain" name="hdrMain">
+                <h1>LoanApp</h1>
+
+                <a href="index.html" data-role="button" data-mini="true" data-icon=
+                   "home" data-iconpos="notext">Home</a></div>
+
+            <!-- /header -->
+            <div data-role="content" id="content">
+                <h3>About Smart Idea Shop</h3>
+
+                <p>The Smart Idea Shop exists because the best ideas are still out there!</p>
+
+                <p>It seems as though everybody has a smartphone or tablet and these devices allow us to discover new ways to work, study, play, interact. The technology in the latest smartphones and tablets seem to grab news headlines but the real story in this ‘smart’ revolution is that the users of these devices are starting to see possibilities that go beyond the obvious. That real value, is in the ideas we get, the eureka moments that come to all of us – not just the nerdy geeky computer types.</p>
+
+                <p>Sure, the ideas come easy but implementing them has been all too hard for most people… Where do I start? Who do I go to? How much does it cost? Then what? How do I make money? These are all valid questions that had no obvious answers, until now.</p>
+
+                <p>Come to the Smart Idea Shop. Tell us your idea and we will make it happen.</p>
+
+                <p>We will work with you to refine the idea and build the app for you… we can also help you deploy and maintain your app.</p>
+
+                <p>If you’re a regular smartphone or tablet user with a great idea, it wouldn’t cost you anything — we will build it for you, take it to market and share the revenue with you. All you do is to share your idea with us.</p>
+
+                <p>If you’re a commercial client, we can give you an efficient, effective and creative solution at an attractive price. We will help integrate your app with your existing web presence, with your email and with other aspects of your business. If required, we can also help you market your app and your business using social-media, YouTube, Twitter and other media.</p>
+
+                <p>If you like our idea, then come share your ideas with us.</p>
+
+                <p>Visit www.smartideashop.com and navigate to the 'Talk To Us' page to get started. </p>
+
+                <p>You should also visit the FAQ page for more details on what we do and how we do it.</p>
+            </div>
+
+            <div data-role="footer" data-tap-toggle="false" data-theme="b"
+                 align="center"><small>www.smartideashop.com</small><br>
+            </div>
+
+            <!-- /footer -->
+        </div>
+
+        <!-- /page -->
+        <div data-role="page" data-theme="b" id="loan1">
+            <div data-role="header" data-theme="b" id="hdrMain" name="hdrMain">
+                <h1>LoanApp</h1>
+
+                <a href="index.html" data-role="button" data-mini="true" data-icon=
+                   "home" data-iconpos="notext">Home</a></div>
+
+            <!-- /header -->
+            <div data-role="content">
+                <h3>Your income</h3>
+
+                <p>Find out how much you can borrow by entering your income and expense details.  Round off your entries to the nearest dollar and skip non relevant fields. Click on 'Next' to proceed.</p>
+
+                <fieldset data-role="fieldcontain">
+                    <label for="income_type" class="select">Income type</label>
+                    <select name="income_type" id="income_type" data-native-menu="false">
+                        <option value="Individual">Individual</option>
+                        <option value="Joint">Joint</option>
+                    </select></fieldset>
+
+                <fieldset data-role="fieldcontain"><label for=
+                                                          "dependents">Dependents</label> <input type="range" name=
+                                                          "dependents" id="dependents" value="0" min="0" max="10"></fieldset>
+
+                <fieldset data-role="fieldcontain">
+                    <p id='lbl_salary1'>Income 1</p>
+
+                    <div class="ui-grid-a">
+                        <div class="ui-block-a"><input type="number" name="salary1" id=
+                                                       "salary1" value="" placeholder="$"></div>
+
+                        <div class="ui-block-b"><select name="salary1_type" id="salary1_type" data-native-menu="false" data-mini="true">
+                                <option value="monthly">Monthly</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="daily">Daily</option>
+                            </select></div>
+                    </div>
+
+                    <!-- /grid-a -->
+                </fieldset>
+
+                <fieldset data-role="fieldcontain">
+                    <p>Income 2</p>
+
+                    <div class="ui-grid-a">
+                        <div class="ui-block-a"><input type="number" name="salary2" id=
+                                                       "salary2" value="" placeholder="$"></div>
+
+                        <div class="ui-block-b"><select name="salary2_type" id=
+                                                        "salary2_type" data-native-menu="false" data-mini="true">
+                                <option value="monthly">Monthly</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="daily">Daily</option>
+                            </select></div>
+                    </div>
+
+                    <!-- /grid-a -->
+                </fieldset>
+
+                <fieldset data-role="fieldcontain">
+                    <p>Other income</p>
+
+                    <div class="ui-grid-a">
+                        <div class="ui-block-a"><input type="number" name="salary3" id=
+                                                       "salary3" value="" placeholder="$"></div>
+
+                        <div class="ui-block-b"><select name="salary3_type" id=
+                                                        "salary3_type" data-native-menu="false" data-mini="true">
+                                <option value="monthly">Monthly</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="daily">Daily</option>
+                            </select></div>
+                    </div>
+
+                    <!-- /grid-a -->
+                </fieldset>
+
+                <a href="#loan2" id="btn_next_loan1" data-role="button" data-icon=
+                   "arrow-r" data-iconpos="right" data-theme="a" onclick=
+    "f_verify_loan1();">Proceed to Step 2</a></div>
+
+            <!-- /content -->
+            <div data-role="footer" data-tap-toggle="false" data-theme="b"
+                 align="center"><small>www.smartideashop.com</small><br>
+            </div>
+
+            <!-- /footer -->
+        </div>
+
+        <!-- /page -->
+        <div data-role="page" data-theme="b" id="loan2">
+            <div data-role="header" data-theme="b" id="hdrMain" name="hdrMain">
+                <h1>LoanApp</h1>
+
+                <a href="index.html" data-role="button" data-mini="true" data-icon=
+                   "home" data-iconpos="notext">Home</a></div>
+
+            <!-- /header -->
+            <div data-role="content">
+
+                <h3>Your expenses</h3>
+
+                <p>Please tell us about your expenses. Fill in the details and
+                    click the 'Next step' button to proceed. You may skip non relevant
+                    fields.</p>
+
+                <fieldset data-role="fieldcontain">
+                    <label for="total_credit_card">Total credit card limit (per year)</label>
+                    <input type="number" name="total_credit_card" id="total_credit_card"placeholder="$">
+                </fieldset>
+
+                <fieldset data-role="fieldcontain">
+                    <p id='lbl_car_loan'>Car loan repayment</p>
+
+                    <div class="ui-grid-a">
+                        <div class="ui-block-a"><input type="number" name="car_loan" id=
+                                                       "car_loan" value="" placeholder="$"></div>
+
+                        <div class="ui-block-b"><select name="car_loan_type" id=
+                                                        "car_loan_type" data-native-menu="false" data-mini="true">
+                                <option value="monthly">Monthly</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="daily">Daily</option>
+                            </select></div>
+                    </div>
+
+                    <!-- /grid-a -->
+                </fieldset>
+
+                <fieldset data-role="fieldcontain">
+                    <p>Housing loan repayment</p>
+
+                    <div class="ui-grid-a">
+                        <div class="ui-block-a"><input type="number" name="house_loan" id=
+                                                       "house_loan" value="" placeholder="$"></div>
+
+                        <div class="ui-block-b"><select name="house_loan_type" id=
+                                                        "house_loan_type" data-native-menu="false" data-mini="true">
+                                <option value="monthly">Monthly</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="daily">Daily</option>
+                            </select></div>
+                    </div>
+
+                    <!-- /grid-a -->
+                </fieldset>
+
+                <fieldset data-role="fieldcontain">
+                    <p>Other payments</p>
+
+                    <div class="ui-grid-a">
+                        <div class="ui-block-a"><input type="number" name="other_loan" id=
+                                                       "other_loan" value="" placeholder="$"></div>
+
+                        <div class="ui-block-b"><select name="other_loan_type" id=
+                                                        "other_loan_type" data-native-menu="false" data-mini="true">
+                                <option value="monthly">Monthly</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="daily">Daily</option>
+                            </select></div>
+                    </div>
+
+                    <!-- /grid-a -->
+                </fieldset>
+
+                <a href="#loan3" data-role="button" data-icon="arrow-r"
+                   data-iconpos="right" data-theme="a">Proceed to Step 3</a></div>
+
+            <!-- /content -->
+            <div data-role="footer" data-tap-toggle="false" data-theme="b"
+                 align="center"><small>www.smartideashop.com</small><br>
+            </div>
+
+            <!-- /footer -->
+        </div>
+
+        <!-- /page -->
+        <div data-role="page" data-theme="b" id="loan3">
+            <div data-role="header" data-theme="b" id="hdrMain" name="hdrMain">
+                <h1>LoanApp</h1>
+
+                <a href="index.html" data-role="button" data-mini="true" data-icon=
+                   "home" data-iconpos="notext">Home</a></div>
+
+            <!-- /header -->
+            <div data-role="content">
+
+                <h3>Your loan requirement</h3>
+
+                <p>Please select a pay back period (in years).</p>
+
+                <fieldset data-role="fieldcontain"><label for="loan_term">Loan
+                        term</label> <input type="range" name="loan_term" id="loan_term"
+                                        value="1" min="1" max="30"></fieldset>
+
+                <fieldset data-role="fieldcontain"><label for="rate">Annual
+                        interest rate %</label> <input type="number" name="rate" id="rate"
+                                                   value="6"></fieldset>
+
+                <a href="#loan4" data-role="button" data-icon="arrow-r"
+                   data-iconpos="right" data-theme="a" onclick=
+    "f_calc_loan();">Proceed to Step 4</a></div>
+
+            <!-- /content -->
+            <div data-role="footer" data-tap-toggle="false" data-theme="b"
+                 align="center"><small>www.smartideashop.com</small><br>
+            </div>
+
+            <!-- /footer -->
+        </div>
+
+        <!-- /page -->
+        <div data-role="page" data-theme="b" id="loan4">
+            <div data-role="header" data-theme="b" id="hdrMain" name="hdrMain">
+                <h1>LoanApp</h1>
+
+                <a href="index.html" data-role="button" data-mini="true" data-icon=
+                   "home" data-iconpos="notext">Home</a></div>
+
+            <!-- /header -->
+            <div data-role="content">
+
+                <h3>Your result</h3>
+
+                <p>Congratulations!</p>
+
+                <p>You may be able to borrow upto</p>
+
+                <form action="loan5.php" method="post">
+                    <fieldset data-role="fieldcontain" class="ui-hide-label"><label
+                            for="principle">Borrowable Amount $</label> <input type="text"
+                            name="principle" id="principle" readonly value=""></fieldset>
+
+                    <fieldset data-role="fieldcontain" class="ui-hide-label">
+                        <p>Monthly repayment</p>
+
+                        <label for="monthly_payment">Monthly repayment $</label> <input
+                            type="text" name="monthly_payment" id="monthly_payment" readonly
+                            value="">
+                    </fieldset>
+
+                    <fieldset data-role="fieldcontain" class="ui-hide-label">
+                        <p>Your monthly income, after paying loan installment</p>
+
+                        <label for="new_monthly_income">new_monthly_income</label> <input
+                            type="text" name="new_monthly_income" id="new_monthly_income" readonly
+                            value="">
+                    </fieldset>
+
+                    <p>Note:</p>
+                    <p>Please note that your eligibility and the extent of your borrowing will be subject to the lending criteria of your preferred financial institution.</p>
+                    <p>If you would like to have a lender contact you with regards to your home loan, please enter your contact details on the next screen.</p>
+
+                    <a href="#loan5" data-role="button" data-icon="arrow-r"
+                       data-iconpos="right" data-theme="a">Click here to apply now and
+                        lock in this rate</a></form>
+            </div>
+
+            <!-- /content -->
+            <div data-role="footer" data-tap-toggle="false" data-theme="b"
+                 align="center"><small>www.smartideashop.com</small><br>
+            </div>
+
+            <!-- /footer -->
+        </div>
+
+        <!-- /page -->
+        <div data-role="page" data-theme="b" id="loan5">
+            <div data-role="header" data-theme="b" id="hdrMain" name="hdrMain">
+                <h1>LoanApp</h1>
+
+                <a href="index.html" data-role="button" data-mini="true" data-icon=
+                   "home" data-iconpos="notext">Home</a></div>
+
+            <!-- /header -->
+            <div data-role="content">
+
+                <h3>Enter your personal details</h3>
+
+                <fieldset data-role="fieldcontain"><label for=
+                                                          "client_name">Name</label> <input type="text" name="client_name"
+                                                          id="client_name"></fieldset>
+
+                <fieldset data-role="fieldcontain"><label for="phone">Phone</label>
+                    <input type="tel" name="phone" id="phone"></fieldset>
+
+                <fieldset data-role="fieldcontain"><label for="email">Email</label>
+                    <input type="email" name="email" id="email"></fieldset>
+
+                <fieldset data-role="fieldcontain"><label for="bank">Your current bank (optional)</label>
+                    <input type="text" name="bank" id="bank"></fieldset>
+
+                <fieldset data-role="fieldcontain"><label for="age">Your age (optional)</label>
+                    <input type="number" name="age" id="age"></fieldset>
+
+                <label><input type="checkbox" name="email_self" id="email_self">
+                    Email your result to yourself</label>
+
+                <label><input type="checkbox" name="contact_me" id="contact_me">
+                    You want a lender contact you</label>
+
+                <a href="#loan6" id='sendinfo' data-role="button" data-icon=
+                   "arrow-r" data-iconpos="right" data-theme="a" onclick=
+    "f_sendinfo();">Send your information</a></div>
+
+            <!-- /content -->
+            <div data-role="footer" data-tap-toggle="false" data-theme="b"
+                 align="center"><small>www.smartideashop.com</small><br>
+            </div>
+
+            <!-- /footer -->
+        </div>
+
+        <!-- /page -->
+        <div data-role="page" data-theme="b" id="loan6">
+            <div data-role="header" data-theme="b" id="hdrMain" name="hdrMain">
+                <h1>LoanApp</h1>
+
+                <a href="index.html" data-role="button" data-mini="true" data-icon=
+                   "home" data-iconpos="notext">Home</a></div>
+
+            <!-- /header -->
+            <div data-role="content">
+
+                <h3>Feedback notice</h3>
+                Sending information : <span id="server_responce"></span>
+            </div>
+
+            <!-- /content -->
+            <div data-role="footer" data-tap-toggle="false" data-theme="b"
+                 align="center"><small>www.smartideashop.com</small><br>
+            </div>
+
+            <!-- /footer -->
+        </div>
+
+        <!-- /page -->
+        <!--
+        <link rel="stylesheet" href="jqm/loancalc_v1.min.css" />
+        <link rel="stylesheet" href="jqm/jquery.mobile.structure-1.2.0.min.css" />
+        -->
+        <link type="text/css" rel="stylesheet" href="jqm/jquery.mobile-1.2.0.min.css">
+        <link type="text/css" rel="stylesheet" href="bank.css">
+        <script type="text/javascript" src="jqm/jquery.mobile-1.2.0.min.js"></script>
+    </body>
+</html>
+
